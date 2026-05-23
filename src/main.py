@@ -31,4 +31,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # Prefer the interactive game loop (Phase 2) implemented in src/game.py
+    try:
+        from game import main as game_main
+        game_main()
+    except Exception:
+        # Fallback to the local main (Phase 1) if importing/running game fails
+        main()
