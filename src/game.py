@@ -1,6 +1,7 @@
 import pygame
 from config import WIDTH, HEIGHT, GAME_TITLE, TEXT_COLOR, BOARD_SIZE
 from board import Board
+from ai import get_random_move
 
 
 class Game:
@@ -48,7 +49,10 @@ class Game:
 
 def draw_status(screen, font, current_player, game):
     if game.game_over:
-        text = f"Player {game.winner} wins!"
+        if game.winner == 'Draw':
+            text = "It's a Draw! Press 'R' to restart"
+        else:
+            text = f"Player {game.winner} wins! Press 'R' to restart"
     else:
         text = f"Turn: {current_player}"
 
@@ -70,6 +74,7 @@ def main():
     title_font = pygame.font.SysFont("Arial", 36)
 
     current_player = 'X'
+    ai_timer = None
     running = True
 
     while running:
@@ -78,7 +83,7 @@ def main():
                 running = False
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if game.game_over:
+                if game.game_over or current_player == 'O':
                     continue
 
                 pos = pygame.mouse.get_pos()
@@ -93,7 +98,35 @@ def main():
                         if game.check_win(row, col, current_player):
                             print(f"Player {current_player} wins!")
                         else:
-                            current_player = 'O' if current_player == 'X' else 'X'
+                            current_player = 'O'
+                            ai_timer = pygame.time.get_ticks() + 500
+
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    board.reset()
+                    game.game_over = False
+                    game.winner = None
+                    current_player = 'X'
+                    ai_timer = None
+                    print("Game reset!")
+
+        # AI Turn logic (non-blocking delay)
+        if not game.game_over and current_player == 'O':
+            if ai_timer is not None and pygame.time.get_ticks() >= ai_timer:
+                move = get_random_move(board)
+                if move:
+                    row, col = move
+                    board.place_piece(row, col, 'O')
+                    if game.check_win(row, col, 'O'):
+                        print("Player O wins!")
+                    else:
+                        current_player = 'X'
+                else:
+                    # Board is full, draw
+                    game.game_over = True
+                    game.winner = 'Draw'
+                    print("It's a Draw!")
+                ai_timer = None
 
         board.draw(screen)
 
