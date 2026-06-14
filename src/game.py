@@ -1,7 +1,7 @@
 import pygame
 from config import WIDTH, HEIGHT, GAME_TITLE, TEXT_COLOR, BOARD_SIZE
 from board import Board
-from ai import get_random_move
+from ai import get_ai_move
 
 
 class Game:
@@ -113,7 +113,7 @@ def main():
         # AI Turn logic (non-blocking delay)
         if not game.game_over and current_player == 'O':
             if ai_timer is not None and pygame.time.get_ticks() >= ai_timer:
-                move = get_random_move(board)
+                move = get_ai_move(board, ai_player='O', human_player='X')
                 if move:
                     row, col = move
                     board.place_piece(row, col, 'O')
