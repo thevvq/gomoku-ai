@@ -1,7 +1,7 @@
 import pygame
 from config import WIDTH, HEIGHT, GAME_TITLE, TEXT_COLOR, BOARD_SIZE
 from board import Board
-from ai import get_ai_move
+from ai import get_ai_move_minimax
 
 
 class Game:
@@ -102,18 +102,21 @@ def main():
                             ai_timer = pygame.time.get_ticks() + 500
 
             elif event.type == pygame.KEYDOWN:
+                print("Key:", event.key)
+
                 if event.key == pygame.K_r:
+                    print("Game reset!")
+
                     board.reset()
                     game.game_over = False
                     game.winner = None
                     current_player = 'X'
                     ai_timer = None
-                    print("Game reset!")
 
         # AI Turn logic (non-blocking delay)
         if not game.game_over and current_player == 'O':
             if ai_timer is not None and pygame.time.get_ticks() >= ai_timer:
-                move = get_ai_move(board, ai_player='O', human_player='X')
+                move = get_ai_move_minimax(board, ai_player='O', human_player='X')
                 if move:
                     row, col = move
                     board.place_piece(row, col, 'O')
