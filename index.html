@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=2" />
 </head>
 <body>
 
@@ -73,8 +73,8 @@
             <div class="avatar-ring x-ring"></div>
           </div>
           <div class="player-info">
-            <div class="player-name" id="playerXName">Người Chơi</div>
-            <div class="player-role x-role">Quân X • Đi trước</div>
+            <div class="player-name" id="playerXName">Người chơi</div>
+            <div class="player-role x-role">Quân X • đi trước</div>
           </div>
           <div class="player-badge" id="playerXBadge">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
@@ -84,7 +84,7 @@
         <!-- Turn Indicator -->
         <div class="turn-indicator" id="turnIndicator">
           <div class="turn-arrow left-arrow">◀</div>
-          <div class="turn-text" id="turnText">LƯỢT CỦA BẠN</div>
+          <div class="turn-text" id="turnText">Lượt của bạn</div>
           <div class="turn-arrow right-arrow">▶</div>
         </div>
 
@@ -109,21 +109,21 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polygon points="5 3 19 12 5 21 5 3"/>
             </svg>
-            Chơi Mới
+            Chơi mới
           </button>
           <button class="btn btn-secondary" id="btnReplay">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polyline points="1 4 1 10 7 10"/>
               <path d="M3.51 15a9 9 0 1 0 .49-3.09"/>
             </svg>
-            Chơi Lại
+            Chơi lại
           </button>
           <button class="btn btn-ghost" id="btnSettingsAlt">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <circle cx="12" cy="12" r="3"/>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
             </svg>
-            Cài Đặt
+            Cài đặt
           </button>
         </div>
 
@@ -137,12 +137,12 @@
           <!-- Win Overlay -->
           <div class="win-overlay hidden" id="winOverlay">
             <div class="win-content">
-              <div class="win-emoji" id="winEmoji">🏆</div>
-              <h2 class="win-title" id="winTitle">CHIẾN THẮNG!</h2>
-              <p class="win-sub" id="winSub">Người Chơi X đã thắng</p>
+              <div class="win-emoji" id="winEmoji"></div>
+              <h2 class="win-title" id="winTitle">WIN</h2>
+              <p class="win-sub" id="winSub">Người chơi X đã thắng</p>
               <div class="win-actions">
-                <button class="btn btn-primary" id="btnWinNewGame">Chơi Mới</button>
-                <button class="btn btn-secondary" id="btnWinReplay">Chơi Lại</button>
+                <button class="btn btn-primary" id="btnWinNewGame">Chơi mới</button>
+                <button class="btn btn-secondary" id="btnWinReplay">Chơi lại</button>
               </div>
             </div>
           </div>
@@ -151,7 +151,7 @@
         <!-- Move History -->
         <div class="move-history glass-panel">
           <div class="history-header">
-            <span>📋 Lịch Sử Nước Đi</span>
+            <span>LỊCH SỬ NƯỚC ĐI</span>
             <span class="move-count" id="moveCount">0 nước</span>
           </div>
           <div class="history-list" id="historyList"></div>
@@ -164,7 +164,6 @@
         <!-- Scoreboard -->
         <div class="scoreboard glass-panel">
           <div class="scoreboard-header">
-            <span class="score-icon">🏆</span>
             <h2>BẢNG ĐIỂM</h2>
           </div>
 
@@ -172,7 +171,7 @@
             <div class="score-player">
               <div class="score-avatar x-avatar-sm">X</div>
               <div class="score-info">
-                <span class="score-name" id="scoreXName">Người Chơi</span>
+                <span class="score-name" id="scoreXName">Người chơi</span>
                 <span class="score-label">Quân X</span>
               </div>
             </div>
@@ -206,7 +205,7 @@
 
         <!-- Game Stats -->
         <div class="game-stats glass-panel">
-          <h3 class="stats-title">📊 Thống Kê Trận</h3>
+          <h3 class="stats-title">THỐNG KÊ TRẬN</h3>
           <div class="stat-item">
             <span class="stat-label">Tổng nước đi</span>
             <span class="stat-value" id="statMoves">0</span>
@@ -227,7 +226,7 @@
 
         <!-- Difficulty -->
         <div class="difficulty-panel glass-panel">
-          <h3 class="stats-title">⚡ Độ Khó AI</h3>
+          <h3 class="stats-title">ĐỘ KHÓ AI</h3>
           <div class="diff-options">
             <button class="diff-btn" id="diffEasy" data-diff="easy">Dễ</button>
             <button class="diff-btn active" id="diffMedium" data-diff="medium">Vừa</button>
@@ -244,23 +243,23 @@
   <div class="modal-overlay hidden" id="settingsModal">
     <div class="modal glass-panel">
       <div class="modal-header">
-        <h2>⚙️ Cài Đặt</h2>
+        <h2>Cài đặt</h2>
         <button class="modal-close" id="closeSettings">✕</button>
       </div>
       <div class="modal-body">
         <div class="setting-group">
-          <label>Tên Người Chơi X</label>
-          <input type="text" id="inputPlayerX" class="setting-input" placeholder="Nhập tên..." maxlength="15" value="Người Chơi" />
+          <label>Tên người chơi X</label>
+          <input type="text" id="inputPlayerX" class="setting-input" placeholder="Nhập tên..." maxlength="15" value="Người chơi" />
         </div>
         <div class="setting-group">
-          <label>Chế Độ Chơi</label>
+          <label>Chế độ chơi</label>
           <div class="mode-selector">
             <button class="mode-btn active" id="modeHumanAI" data-mode="human-ai">Người vs AI</button>
             <button class="mode-btn" id="modeHumanHuman" data-mode="human-human">Người vs Người</button>
           </div>
         </div>
         <div class="setting-group">
-          <label>Hiệu Ứng Âm Thanh</label>
+          <label>Hiệu ứng âm thanh</label>
           <div class="toggle-wrap">
             <label class="toggle">
               <input type="checkbox" id="toggleSound" checked />
@@ -270,7 +269,7 @@
           </div>
         </div>
         <div class="setting-group">
-          <label>Hiệu Ứng Hình Ảnh</label>
+          <label>Hiệu ứng hình ảnh</label>
           <div class="toggle-wrap">
             <label class="toggle">
               <input type="checkbox" id="toggleEffects" checked />
@@ -281,11 +280,11 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" id="saveSettings">Lưu Cài Đặt</button>
+        <button class="btn btn-primary" id="saveSettings">Lưu cài đặt</button>
       </div>
     </div>
   </div>
 
-  <script src="game.js"></script>
+  <script src="game.js?v=2"></script>
 </body>
 </html>

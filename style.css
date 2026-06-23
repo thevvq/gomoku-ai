@@ -306,6 +306,7 @@ body {
   background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
 }
 
 .turn-arrow { color: var(--neon-blue); font-size: 0.7rem; animation: arrowBounce 1s ease infinite; }
@@ -322,6 +323,7 @@ body {
   cursor: pointer; transition: var(--transition);
   position: relative; overflow: hidden;
   letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .btn::after {

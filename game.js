@@ -19,7 +19,7 @@ let state = {
   moveHistory: [],
   mode: 'human-ai',   // 'human-ai' | 'human-human'
   difficulty: 'medium',
-  playerXName: 'Người Chơi',
+  playerXName: 'Người chơi',
   playerOName: 'Gomoku AI',
   soundEnabled: true,
   effectsEnabled: true,
@@ -292,7 +292,7 @@ function updateUI() {
   if (!state.gameOver) {
     const name = state.currentPlayer === 'X' ? state.playerXName : state.playerOName;
     const isAI = state.mode === 'human-ai' && state.currentPlayer === 'O';
-    els.turnText.textContent = isAI ? 'AI ĐANG NGHĨ...' : `LƯỢT ${name.toUpperCase()}`;
+    els.turnText.textContent = isAI ? 'AI đang nghĩ...' : `Lượt ${name}`;
     setStatus('active', isAI ? 'AI đang suy nghĩ...' : `Lượt của ${name}`);
   } else {
     setStatus('win', state.winner === 'draw' ? 'Hòa!' : `${state.winner === 'X' ? state.playerXName : state.playerOName} thắng!`);
@@ -345,13 +345,13 @@ function addHistoryItem(player, r, c, num) {
 
 function showWinOverlay(winner) {
   if (winner === 'draw') {
-    els.winEmoji.textContent = '🤝';
-    els.winTitle.textContent = 'HÒA!';
+    els.winEmoji.textContent = '';
+    els.winTitle.textContent = 'DRAW';
     els.winSub.textContent = 'Hai bên không phân thắng bại';
   } else {
     const name = winner === 'X' ? state.playerXName : state.playerOName;
-    els.winEmoji.textContent = winner === 'X' ? '🏆' : '🤖';
-    els.winTitle.textContent = 'CHIẾN THẮNG!';
+    els.winEmoji.textContent = '';
+    els.winTitle.textContent = 'WIN';
     els.winSub.textContent = `${name} (Quân ${winner}) đã thắng!`;
   }
   setTimeout(() => els.winOverlay.classList.remove('hidden'), 600);
@@ -849,7 +849,7 @@ els.modeHumanHuman.addEventListener('click', () => {
   state.mode = 'human-human';
   els.modeHumanHuman.classList.add('active');
   els.modeHumanAI.classList.remove('active');
-  state.playerOName = 'Người Chơi 2';
+  state.playerOName = 'Người chơi 2';
   updateUI();
 });
 
