@@ -180,8 +180,17 @@ def get_best_move(board, ai_player='O', human_player='X'):
         defend_score = score_for_player(grid, human_player)
         grid[r][c] = None
 
-        # Trọng số: tấn công 1.0, phòng thủ 0.9
-        combined = attack_score + defend_score * 0.9
+        # Trọng số phòng thủ linh hoạt:
+        # - Nếu đối thủ có 4 quân mở (10000+) → trọng số 1.5 (ưu tiên chặn cao)
+        # - Nếu đối thủ có 4 quân bị chặn (5000+) → trọng số 1.2
+        # - Bình thường → trọng số 0.9
+        if defend_score >= 10_000:
+            defend_weight = 1.5  # Chặn ngay 4 quân mở của đối thủ
+        elif defend_score >= 5_000:
+            defend_weight = 1.2  # Chặn 4 quân bị chặn
+        else:
+            defend_weight = 0.9
+        combined = attack_score + defend_score * defend_weight
 
         if combined > best_score:
             best_score = combined
@@ -205,3 +214,59 @@ def _get_candidate_cells(grid, size, radius=2):
                         if _in_bounds(nr, nc) and grid[nr][nc] is None:
                             candidates.add((nr, nc))
     return candidates
+
+
+import random
+
+
+def get_easy_move(board, ai_player='O', human_player='X'):
+    """
+    Chọn nước đi cho mức Dễ: xét top 3 nước heuristic tốt, rồi chọn ngẫu nhiên một cái.
+    Làm cho AI Dễ bớt hoàn hảo và đôi khi sai lầm nhỏ.
+
+    Args:
+        board: đối tượng Board
+        ai_player:    ký hiệu quân AI   (mặc định 'O')
+        human_player: ký hiệu quân người (mặc định 'X')
+
+    Returns:
+        (row, col) — nước đi được chọn ngẫu nhiên từ top 3, hoặc None nếu bàn cờ đầy.
+    """
+    grid = board.grid
+    size = board.size
+    moves_with_score = []
+
+    candidates = _get_candidate_cells(grid, size)
+    if not candidates:
+        mid = size // 2
+        return (mid, mid)
+
+    for r, c in candidates:
+        if grid[r][c] is not None:
+            continue
+
+        grid[r][c] = ai_player
+        attack_score = score_for_player(grid, ai_player)
+        grid[r][c] = None
+
+        grid[r][c] = human_player
+        defend_score = score_for_player(grid, human_player)
+        grid[r][c] = None
+
+        # Trọng số phòng thủ linh hoạt:
+        if defend_score >= 10_000:
+            defend_weight = 1.5  # Ưu tiên cao chặn 4 quân mở
+        elif defend_score >= 5_000:
+            defend_weight = 1.2  # Ưu tiên chặn 4 quân bị chặn
+        else:
+            defend_weight = 0.9
+        combined = attack_score + defend_score * defend_weight
+        moves_with_score.append((combined, (r, c)))
+
+    if not moves_with_score:
+        return None
+
+    moves_with_score.sort(reverse=True, key=lambda x: x[0])
+    top_moves = moves_with_score[:min(2, len(moves_with_score))]
+
+    return random.choice(top_moves)[1]
