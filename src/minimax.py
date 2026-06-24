@@ -1,12 +1,12 @@
 """
-minimax.py — Giai Đoạn 6: Minimax + Alpha-Beta Pruning
-======================================================
-Xây dựng cây tìm kiếm Minimax để AI dự đoán nước đi tương lai.
-Tối ưu tìm kiếm bằng Alpha-Beta Pruning.
+minimax.py — Giai đoạn 6: Minimax + Alpha-Beta Pruning
+========================================================
+Xây dựng cây tìm kiếm Minimax để AI dự đoán các nước đi tương lai.
+Tối ưu hóa quá trình tìm kiếm bằng kỹ thuật Alpha-Beta Pruning.
 
-Mục Tiêu:
+Mục tiêu:
   - Mô phỏng các nước đi tương lai (lên đến độ sâu `depth`)
-  - Đánh giá bàn cờ bằng đệ quy
+  - Đánh giá trạng thái bàn cờ một cách đệ quy
   - Chọn nước đi tốt nhất dựa trên điểm số
 """
 
@@ -22,21 +22,22 @@ INF = float('inf')
 
 def evaluate_board(grid, ai_player, human_player):
     """
-    Đánh giá trạng thái bàn cờ từ góc nhìn AI.
+    Đánh giá trạng thái bàn cờ từ góc nhìn của AI.
     
-    Công thức:
-        score = (AI score) - (Human score)
+    Công thức tính điểm:
+        score = (điểm AI) - (điểm Human)
     
-    Nếu AI thắng: +INF
-    Nếu Human thắng: -INF
+    Trường hợp đặc biệt:
+      - Nếu AI thắng: trả về +INF
+      - Nếu Human thắng: trả về -INF
     
     Args:
-        grid:         2D list bàn cờ [r][c] ∈ {None, 'X', 'O'}
-        ai_player:    ký hiệu quân AI   (mặc định 'O')
-        human_player: ký hiệu quân người (mặc định 'X')
+        grid:         2D list bàn cờ với các ô [r][c] ∈ {None, 'X', 'O'}
+        ai_player:    ký hiệu quân của AI (mặc định 'O')
+        human_player: ký hiệu quân của người chơi (mặc định 'X')
     
     Returns:
-        Điểm số (float): nếu AI cao → AI tốt, nếu thấp → Human tốt
+        Điểm số (float): giá trị cao → tốt cho AI, giá trị thấp → tốt cho Human
     """
     ai_score = score_for_player(grid, ai_player)
     human_score = score_for_player(grid, human_player)
@@ -53,14 +54,14 @@ def evaluate_board(grid, ai_player, human_player):
 
 def is_terminal(grid, ai_player, human_player):
     """
-    Kiểm tra trò chơi có kết thúc không.
+    Kiểm tra xem trò chơi đã kết thúc hay chưa.
     
-    Game kết thúc khi:
-      - Một trong hai người có 5 quân liên tiếp
-      - Bàn cờ đầy (không còn ô trống)
+    Trò chơi kết thúc khi:
+      - Một trong hai người chơi có 5 quân liên tiếp
+      - Bàn cờ đầy (không còn ô trống nào)
     
     Returns:
-        bool: True nếu game kết thúc
+        bool: True nếu trò chơi kết thúc, False nếu vẫn tiếp tục
     """
     ai_score = score_for_player(grid, ai_player)
     human_score = score_for_player(grid, human_player)
@@ -79,12 +80,13 @@ def is_terminal(grid, ai_player, human_player):
 
 def get_all_moves(grid):
     """
-    Trả về tất cả các ô trống trên bàn cờ.
+    Lấy danh sách tất cả các ô trống trên bàn cờ.
     
-    Ưu tiên: nước đi gần các quân hiện có hơn (để tìm kiếm hiệu quả).
+    Ghi chú: Các ô này sẽ được sắp xếp theo độ gần với các quân hiện có
+    để tối ưu hóa quá trình tìm kiếm.
     
     Returns:
-        list: [(row, col), ...] các ô có thể đi
+        list: Danh sách các ô có thể đi [(row, col), ...]
     """
     empty_cells = []
     for r in range(BOARD_SIZE):
@@ -97,18 +99,18 @@ def get_all_moves(grid):
 
 def sort_moves_by_proximity(grid, moves):
     """
-    Sắp xếp nước đi theo gần với các quân hiện có (tính heuristic).
-    Nước đi gần quân hiện có có khả năng tốt hơn.
+    Sắp xếp các nước đi theo độ gần với các quân hiện có trên bàn cờ.
+    Nước đi gần với các quân hiện có thường có tiên năng cao hơn.
     
     Args:
-        grid:  2D list bàn cờ
-        moves: list [(row, col), ...]
+        grid:  2D list biểu diễn bàn cờ
+        moves: list các nước đi [(row, col), ...]
     
     Returns:
-        list: moves được sắp xếp
+        list: danh sách các nước đi đã sắp xếp theo độ gần
     """
     def distance_to_closest_piece(r, c):
-        """Tính khoảng cách đến quân gần nhất."""
+        """Tính khoảng cách Manhattan đến quân gần nhất trên bàn cờ."""
         min_dist = INF
         for rr in range(BOARD_SIZE):
             for cc in range(BOARD_SIZE):
@@ -117,7 +119,7 @@ def sort_moves_by_proximity(grid, moves):
                     min_dist = min(min_dist, dist)
         return min_dist
     
-    # Sắp xếp theo khoảng cách (gần nhất trước)
+    # Sắp xếp các nước đi theo khoảng cách (gần nhất được ưu tiên)
     return sorted(moves, key=lambda move: distance_to_closest_piece(move[0], move[1]))
 
 
@@ -127,32 +129,32 @@ def sort_moves_by_proximity(grid, moves):
 
 def minimax(grid, depth, is_maximizing, alpha, beta, ai_player, human_player):
     """
-    Thuật toán Minimax với Alpha-Beta Pruning.
+    Thuật toán Minimax kết hợp với Alpha-Beta Pruning.
     
-    Ý tưởng:
-      - Maximizing: AI chọn nước để max hóa điểm → điểm càng cao càng tốt
-      - Minimizing: Human chọn nước để min hóa điểm (từ góc AI) → điểm càng thấp càng tốt
-      - Alpha-Beta Pruning: cắt nhánh không cần thiết để tối ưu tìm kiếm
+    Nguyên lý hoạt động:
+      - Maximizing: AI tìm nước đi để tối đa hóa điểm → điểm cao = tốt cho AI
+      - Minimizing: Human tìm nước đi để tối thiểu hóa điểm → điểm thấp = tốt cho Human
+      - Alpha-Beta Pruning: loại bỏ các nhánh không cần khảo sát để tối ưu tìm kiếm
     
     Args:
-        grid:              2D list bàn cờ hiện tại [r][c] ∈ {None, 'X', 'O'}
-        depth:             độ sâu tìm kiếm còn lại (0 = dừng)
-        is_maximizing:     True = lượt AI, False = lượt Human
-        alpha:             tốt nhất cho Maximizer (dùng pruning)
-        beta:              tốt nhất cho Minimizer (dùng pruning)
-        ai_player:         ký hiệu quân AI ('O')
-        human_player:      ký hiệu quân người ('X')
+        grid:              2D list trạng thái bàn cờ [r][c] ∈ {None, 'X', 'O'}
+        depth:             độ sâu tìm kiếm còn lại (0 = dừng tìm kiếm)
+        is_maximizing:     True = lượt tối đa (AI), False = lượt tối thiểu (Human)
+        alpha:             giá trị tốt nhất hiện tại cho người tối đa
+        beta:              giá trị tốt nhất hiện tại cho người tối thiểu
+        ai_player:         ký hiệu quân của AI (thường là 'O')
+        human_player:      ký hiệu quân của người chơi (thường là 'X')
     
     Returns:
-        float: Điểm số của trạng thái này
+        float: Điểm đánh giá của trạng thái bàn cờ hiện tại
     """
-    # Điều kiện dừng: depth = 0 hoặc game kết thúc
+    # Điều kiện dừng: không còn độ sâu hoặc trò chơi đã kết thúc
     if depth == 0 or is_terminal(grid, ai_player, human_player):
         return evaluate_board(grid, ai_player, human_player)
     
     moves = get_all_moves(grid)
     
-    if not moves:  # Bàn cờ đầy
+    if not moves:  # Bàn cờ đầy, không còn nước đi
         return evaluate_board(grid, ai_player, human_player)
     
     # Sắp xếp nước đi để tìm kiếm tốt hơn (pruning hiệu quả hơn)
@@ -201,42 +203,42 @@ def minimax(grid, depth, is_maximizing, alpha, beta, ai_player, human_player):
 
 def get_best_move_minimax(board, depth=4, ai_player='O', human_player='X'):
     """
-    Tìm nước đi tốt nhất cho AI bằng Minimax + Alpha-Beta Pruning.
+    Tìm nước đi tốt nhất cho AI sử dụng thuật toán Minimax + Alpha-Beta Pruning.
     
     Args:
-        board:         đối tượng Board
-        depth:         độ sâu tìm kiếm (mặc định 4 = tìm 4 nước trước)
-        ai_player:     ký hiệu quân AI ('O')
-        human_player:  ký hiệu quân người ('X')
+        board:         đối tượng Board chứa trạng thái bàn cờ
+        depth:         độ sâu tìm kiếm (mặc định 4 = xem trước 4 nước)
+        ai_player:     ký hiệu quân của AI (mặc định 'O')
+        human_player:  ký hiệu quân của người chơi (mặc định 'X')
     
     Returns:
-        (row, col) nước đi tốt nhất, hoặc None nếu bàn cờ đầy
+        Tuple (row, col) nước đi tốt nhất, hoặc None nếu bàn cờ không còn ô trống
     """
     moves = get_all_moves(board.grid)
     
     if not moves:
         return None
     
-    # Nếu chỉ 1 ô trống, đi luôn
+    # Nếu chỉ còn 1 ô trống, trực tiếp chọn ô đó
     if len(moves) == 1:
         return moves[0]
     
     best_move = None
     best_eval = -INF
     
-    # Sắp xếp nước đi theo gần các quân hiện có
+    # Sắp xếp nước đi để tìm kiếm hiệu quả hơn (alpha-beta pruning tốt hơn)
     moves = sort_moves_by_proximity(board.grid, moves)
     
     for r, c in moves:
-        # Thử đi ở (r, c)
+        # Thử đặt quân AI tại vị trí (r, c)
         board.grid[r][c] = ai_player
         
-        # Tính điểm cho nước đi này (lượt tiếp theo là Human)
+        # Tính điểm đánh giá cho nước đi này (lượt tiếp theo là của Human)
         eval_score = minimax(board.grid, depth - 1, False, -INF, INF, ai_player, human_player)
         
-        board.grid[r][c] = None  # Undo
+        board.grid[r][c] = None  # Hoàn tác nước đi
         
-        # Chọn nước có điểm cao nhất
+        # Cập nhật nước đi tốt nhất nếu tìm được điểm cao hơn
         if eval_score > best_eval:
             best_eval = eval_score
             best_move = (r, c)
