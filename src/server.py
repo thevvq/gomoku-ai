@@ -43,6 +43,6 @@ if __name__ == '__main__':
     import uvicorn
     print("=======================================")
     print("Gomoku Web Server running with FastAPI!")
-    print("Open http://localhost:7890 in browser.")
+    print("Open http://localhost:7891 in browser.")
     print("=======================================")
-    uvicorn.run("server:app", host="0.0.0.0", port=7890, reload=True)
+    uvicorn.run("server:app", host="0.0.0.0", port=7891, reload=True)
