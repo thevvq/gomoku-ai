@@ -97,6 +97,35 @@ def get_all_moves(grid):
     return empty_cells
 
 
+def get_candidate_moves(grid, radius=1):
+    """
+    Lấy các ô trống nằm gần quân đã có trên bàn cờ.
+
+    Giảm mạnh số nhánh phải duyệt trong minimax so với việc xét toàn bộ
+    các ô trống, nhưng vẫn giữ được các nước đi có khả năng liên quan.
+    """
+    candidates = set()
+
+    for r in range(BOARD_SIZE):
+        for c in range(BOARD_SIZE):
+            if grid[r][c] is None:
+                continue
+
+            for dr in range(-radius, radius + 1):
+                for dc in range(-radius, radius + 1):
+                    nr, nc = r + dr, c + dc
+                    if 0 <= nr < BOARD_SIZE and 0 <= nc < BOARD_SIZE and grid[nr][nc] is None:
+                        candidates.add((nr, nc))
+
+    return list(candidates)
+
+
+def _limit_moves(moves, max_moves):
+    if len(moves) <= max_moves:
+        return moves
+    return moves[:max_moves]
+
+
 def sort_moves_by_proximity(grid, moves):
     """
     Sắp xếp các nước đi theo độ gần với các quân hiện có trên bàn cờ.
@@ -152,13 +181,16 @@ def minimax(grid, depth, is_maximizing, alpha, beta, ai_player, human_player):
     if depth == 0 or is_terminal(grid, ai_player, human_player):
         return evaluate_board(grid, ai_player, human_player)
     
-    moves = get_all_moves(grid)
+    moves = get_candidate_moves(grid)
+    if not moves:
+        moves = get_all_moves(grid)
     
     if not moves:  # Bàn cờ đầy, không còn nước đi
         return evaluate_board(grid, ai_player, human_player)
     
     # Sắp xếp nước đi để tìm kiếm tốt hơn (pruning hiệu quả hơn)
     moves = sort_moves_by_proximity(grid, moves)
+    moves = _limit_moves(moves, 12 if depth <= 2 else 10)
     
     if is_maximizing:
         # Lượt AI: chọn nước có điểm cao nhất
@@ -201,20 +233,24 @@ def minimax(grid, depth, is_maximizing, alpha, beta, ai_player, human_player):
 # Hàm Tìm Nước Đi Tốt Nhất Bằng Minimax
 # ---------------------------------------------------------------------------
 
-def get_best_move_minimax(board, depth=4, ai_player='O', human_player='X'):
+def get_best_move_minimax(board, depth=4, ai_player='O', human_player='X', max_candidates=16):
     """
     Tìm nước đi tốt nhất cho AI sử dụng thuật toán Minimax + Alpha-Beta Pruning.
     
     Args:
-        board:         đối tượng Board chứa trạng thái bàn cờ
-        depth:         độ sâu tìm kiếm (mặc định 4 = xem trước 4 nước)
-        ai_player:     ký hiệu quân của AI (mặc định 'O')
-        human_player:  ký hiệu quân của người chơi (mặc định 'X')
+        board:          đối tượng Board chứa trạng thái bàn cờ
+        depth:          độ sâu tìm kiếm (mặc định 4 = xem trước 4 nước)
+        ai_player:      ký hiệu quân của AI (mặc định 'O')
+        human_player:   ký hiệu quân của người chơi (mặc định 'X')
+        max_candidates: số nước ứng viên tối đa xét ở nốt gốc.
+                        Cao hơn → AI mạnh hơn nhưng chậm hơn.
     
     Returns:
         Tuple (row, col) nước đi tốt nhất, hoặc None nếu bàn cờ không còn ô trống
     """
-    moves = get_all_moves(board.grid)
+    moves = get_candidate_moves(board.grid)
+    if not moves:
+        moves = get_all_moves(board.grid)
     
     if not moves:
         return None
@@ -228,6 +264,7 @@ def get_best_move_minimax(board, depth=4, ai_player='O', human_player='X'):
     
     # Sắp xếp nước đi để tìm kiếm hiệu quả hơn (alpha-beta pruning tốt hơn)
     moves = sort_moves_by_proximity(board.grid, moves)
+    moves = _limit_moves(moves, max_candidates)
     
     for r, c in moves:
         # Thử đặt quân AI tại vị trí (r, c)

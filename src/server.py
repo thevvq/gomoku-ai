@@ -21,6 +21,7 @@ class MoveRequest(BaseModel):
     grid: List[List[Optional[str]]]
     ai_player: str = 'O'
     human_player: str = 'X'
+    difficulty: str = 'medium'
 
 @app.post("/api/move")
 def get_move(req: MoveRequest):
@@ -31,7 +32,12 @@ def get_move(req: MoveRequest):
                 board.grid[r][c] = req.grid[r][c]
         
         # Call original Python AI
-        move = get_ai_move(board, ai_player=req.ai_player, human_player=req.human_player)
+        move = get_ai_move(
+            board,
+            ai_player=req.ai_player,
+            human_player=req.human_player,
+            difficulty=req.difficulty,
+        )
         return {"move": move}
     except Exception as e:
         return {"error": str(e)}

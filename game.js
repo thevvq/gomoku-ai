@@ -225,8 +225,19 @@ function triggerAI() {
   const reqBody = {
     grid: state.grid,
     ai_player: 'O',
-    human_player: 'X'
+    human_player: 'X',
+    difficulty: state.difficulty
   };
+
+  // Delay giả lập "suy nghĩ" sau khi server trả kết quả
+  // easy: 900–1400ms, medium: 500–900ms, hard: 0ms
+  function getThinkDelay() {
+    if (state.difficulty === 'easy')   return 900  + Math.random() * 500;
+    if (state.difficulty === 'medium') return 500  + Math.random() * 400;
+    return 0;
+  }
+
+  const startTime = Date.now();
 
   fetch('/api/move', {
     method: 'POST',
@@ -235,12 +246,17 @@ function triggerAI() {
   })
   .then(res => res.json())
   .then(data => {
-    state.aiThinking = false;
-    if (data.move) {
-      placeMove(data.move[0], data.move[1]);
-    } else {
-      // Bàn cờ đầy hoặc không có nước đi
-    }
+    const elapsed  = Date.now() - startTime;
+    const minDelay = getThinkDelay();
+    const remaining = Math.max(0, minDelay - elapsed);
+
+    setTimeout(() => {
+      state.aiThinking = false;
+      if (data.move) {
+        placeMove(data.move[0], data.move[1]);
+      }
+      // else: bàn cờ đầy hoặc không có nước đi
+    }, remaining);
   })
   .catch(err => {
     console.error('Lỗi khi gọi AI Python:', err);
@@ -305,7 +321,8 @@ function updateUI() {
   els.scoreOName.textContent = state.playerOName;
 
   // Stats
-  els.statMode.textContent = state.mode === 'human-ai' ? 'Người vs AI' : 'Người vs Người';
+  const difficultyLabel = { easy: 'Dễ', medium: 'Vừa', hard: 'Khó' }[state.difficulty] || 'Vừa';
+  els.statMode.textContent = state.mode === 'human-ai' ? `Người vs AI • ${difficultyLabel}` : 'Người vs Người';
   els.drawValue.textContent = state.scores.draw;
   els.totalGames.textContent = state.totalGames;
 }
