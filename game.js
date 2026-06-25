@@ -28,6 +28,7 @@ let state = {
   gameStartTime: null,
   timerInterval: null,
   hoverCell: null,
+  lastMove: null,
 };
 
 // ======================== CANVAS ========================
@@ -126,12 +127,24 @@ function initGame(resetScores = false) {
   state.moveHistory = [];
   state.aiThinking = false;
   state.hoverCell = null;
+  state.lastMove = null;
   state.gameStartTime = Date.now();
 
   if (resetScores) {
-    state.scores = { X: 0, O: 0, draw: 0 };
     state.totalGames = 0;
   }
+  
+  // Load stats from server
+  fetch('/api/stats')
+    .then(r => r.json())
+    .then(data => {
+      state.scores.X = data.wins;
+      state.scores.O = data.losses;
+      state.scores.draw = data.draws;
+      state.scores.score = data.score; // Total score
+      updateUI();
+    })
+    .catch(console.error);
 
   if (state.aiThinkTimeout) clearTimeout(state.aiThinkTimeout);
   stopTimer(); startTimer();
@@ -190,6 +203,7 @@ function placeMove(r, c) {
   if (state.gameOver || state.aiThinking || state.grid[r][c] !== null) return;
 
   state.grid[r][c] = state.currentPlayer;
+  state.lastMove = [r, c];
   const moveNum = state.moveHistory.length + 1;
   state.moveHistory.push({ player: state.currentPlayer, row: r, col: c, num: moveNum });
   els.statMoves.textContent = state.moveHistory.length;
@@ -271,13 +285,25 @@ function endGame(winner, winLine) {
   state.totalGames++;
   stopTimer();
 
-  if (winner !== 'draw') {
-    state.scores[winner]++;
+  // Call API to save match result
+  let apiResult = 'draw';
+  if (winner === 'X') apiResult = 'win';
+  else if (winner === 'O') apiResult = 'loss';
+  
+  fetch('/api/match_end', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ result: apiResult })
+  })
+  .then(r => r.json())
+  .then(data => {
+    state.scores.X = data.wins;
+    state.scores.O = data.losses;
+    state.scores.draw = data.draws;
+    state.scores.score = data.score;
     updateScoreDisplay(winner);
-  } else {
-    state.scores.draw++;
-    updateScoreDisplay(null);
-  }
+  })
+  .catch(console.error);
 
   drawBoard();
   updateUI();
@@ -334,7 +360,9 @@ function updateScoreDisplay(winner) {
   els.scoreXValue.textContent = state.scores.X;
   els.scoreOValue.textContent = state.scores.O;
   els.drawValue.textContent = state.scores.draw;
-  els.totalGames.textContent = state.totalGames;
+  
+  // Hiển thị Điểm Tổng thay vì tổng số trận
+  els.totalGames.textContent = state.scores.score;
 
   if (winner === 'X') {
     els.scoreXValue.style.animation = 'none';
@@ -482,6 +510,18 @@ function drawPieces() {
         drawX(x, y, isWin);
       } else {
         drawO(x, y, isWin);
+      }
+      
+      // Chấm sáng đánh dấu nước đi cuối cùng
+      if (state.lastMove && state.lastMove[0] === r && state.lastMove[1] === c) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.shadowColor = '#FFFFFF';
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        ctx.restore();
       }
     }
   }

@@ -6,28 +6,28 @@
 
 /* CSS Variables */
 :root {
-  --bg-deep: #080b14;
-  --bg-dark: #0d1120;
-  --bg-card: rgba(15, 20, 38, 0.85);
-  --bg-glass: rgba(20, 28, 55, 0.6);
+  --bg-deep: #2A1F1A;  /* Espresso */
+  --bg-dark: #3E2B23;  /* Dark Roast */
+  --bg-card: rgba(62, 43, 35, 0.85);
+  --bg-glass: rgba(85, 62, 50, 0.6);
 
-  --neon-blue: #00cfff;
-  --neon-purple: #a855f7;
-  --neon-pink: #ec4899;
-  --neon-gold: #fbbf24;
-  --neon-red: #ff4d6d;
-  --neon-green: #10b981;
+  --neon-blue: #D4A373;   /* Latte */
+  --neon-purple: #FAEDCD; /* Cream */
+  --neon-pink: #E9EDC9;
+  --neon-gold: #FFD166;
+  --neon-red: #E76F51;
+  --neon-green: #2A9D8F;
 
-  --x-color: #00cfff;
-  --x-glow: rgba(0, 207, 255, 0.6);
-  --o-color: #ff4d6d;
-  --o-glow: rgba(255, 77, 109, 0.6);
+  --x-color: #FAEDCD; /* Cream for X */
+  --x-glow: rgba(250, 237, 205, 0.6);
+  --o-color: #E76F51; /* Terracotta for O */
+  --o-glow: rgba(231, 111, 81, 0.6);
 
-  --text-primary: #e8eaf6;
-  --text-secondary: #8892b0;
-  --text-muted: #4a5568;
+  --text-primary: #FEFAE0;
+  --text-secondary: #CCD5AE;
+  --text-muted: #8E7A71;
 
-  --border: rgba(99, 119, 179, 0.2);
+  --border: rgba(212, 163, 115, 0.2);
   --border-glow: rgba(0, 207, 255, 0.3);
 
   --radius-sm: 8px;
@@ -35,8 +35,8 @@
   --radius-lg: 24px;
   --radius-xl: 32px;
 
-  --shadow-blue: 0 0 30px rgba(0, 207, 255, 0.15);
-  --shadow-purple: 0 0 30px rgba(168, 85, 247, 0.15);
+  --shadow-blue: 0 0 30px rgba(212, 163, 115, 0.15);
+  --shadow-purple: 0 0 30px rgba(250, 237, 205, 0.15);
   --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
 
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -302,10 +302,10 @@ body {
   flex: 1;
   display: flex;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: space-between;
   gap: 24px;
-  padding: 24px 20px;
-  max-width: 1400px;
+  padding: 24px 40px;
+  max-width: 1600px;
   margin: 0 auto;
   width: 100%;
 }
