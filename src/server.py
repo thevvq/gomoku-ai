@@ -11,9 +11,13 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from board import Board
 from ai import get_ai_move
+from database import init_db, get_stats, update_match_result
 
 # The frontend code is at the project root
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Khởi tạo DB khi load server
+init_db()
 
 app = FastAPI(title="Gomoku AI API")
 
@@ -41,6 +45,18 @@ def get_move(req: MoveRequest):
         return {"move": move}
     except Exception as e:
         return {"error": str(e)}
+
+class MatchResultRequest(BaseModel):
+    result: str # 'win', 'loss', 'draw'
+
+@app.get("/api/stats")
+def fetch_stats():
+    return get_stats()
+
+@app.post("/api/match_end")
+def match_end(req: MatchResultRequest):
+    return update_match_result(req.result)
+
 
 # Serve static files from the project root (index.html, game.js, style.css)
 app.mount("/", StaticFiles(directory=ROOT_DIR, html=True), name="static")
