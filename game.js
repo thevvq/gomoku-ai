@@ -64,9 +64,6 @@ const els = {
   winTitle:        $('winTitle'),
   winSub:          $('winSub'),
 
-  historyList:     $('historyList'),
-  moveCount:       $('moveCount'),
-
   scoreXValue:     $('scoreXValue'),
   scoreOValue:     $('scoreOValue'),
   scoreXName:      $('scoreXName'),
@@ -195,7 +192,6 @@ function placeMove(r, c) {
   state.grid[r][c] = state.currentPlayer;
   const moveNum = state.moveHistory.length + 1;
   state.moveHistory.push({ player: state.currentPlayer, row: r, col: c, num: moveNum });
-  addHistoryItem(state.currentPlayer, r, c, moveNum);
   els.statMoves.textContent = state.moveHistory.length;
 
   const winLine = checkWin(state.grid, r, c, state.currentPlayer);
@@ -347,17 +343,6 @@ function updateScoreDisplay(winner) {
     els.scoreOValue.style.animation = 'none';
     requestAnimationFrame(() => { els.scoreOValue.style.animation = 'scoreFlash 0.5s ease'; });
   }
-}
-
-function addHistoryItem(player, r, c, num) {
-  const cols = 'ABCDEFGHIJKLMNO';
-  const label = `${num}. ${player}${cols[c]}${r + 1}`;
-  const div = document.createElement('div');
-  div.className = `history-item ${player.toLowerCase()}`;
-  div.textContent = label;
-  els.historyList.appendChild(div);
-  els.historyList.scrollTop = els.historyList.scrollHeight;
-  els.moveCount.textContent = `${num} nước`;
 }
 
 function showWinOverlay(winner) {
