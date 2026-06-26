@@ -287,6 +287,9 @@ body {
 .difficulty-group {
   margin-top: 10px;
 }
+.difficulty-group.is-disabled {
+  opacity: 0.55;
+}
 .diff-label {
   font-size: 10px;
   color: var(--text-title);
@@ -314,6 +317,10 @@ body {
   border-color: var(--brand-green);
   background: var(--card-active-bg);
   color: var(--brand-dark);
+}
+.diff-btn:disabled {
+  cursor: not-allowed;
+  color: var(--text-title);
 }
 
 /* ===================== BOARD SECTION ===================== */

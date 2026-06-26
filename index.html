@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=3" />
+  <link rel="stylesheet" href="style.css?v=4" />
 </head>
 <body>
 
@@ -50,7 +50,7 @@
         <div class="player-card active" id="playerXCard">
           <div class="player-avatar x-avatar"></div>
           <div class="player-info">
-            <div class="player-name" id="playerXName">Người chơi</div>
+            <div class="player-name" id="playerXName">Người chơi 1</div>
             <div class="player-role">Quân X</div>
           </div>
           <div class="player-active-dot" id="playerXBadge"></div>
@@ -60,7 +60,7 @@
         <div class="player-card" id="playerOCard">
           <div class="player-avatar o-avatar"></div>
           <div class="player-info">
-            <div class="player-name" id="playerOName">Gomoku AI</div>
+            <div class="player-name" id="playerOName">Người chơi 2</div>
             <div class="player-role">Quân O</div>
           </div>
           <div class="player-active-dot" id="playerOBadge"></div>
@@ -150,10 +150,10 @@
             <div class="legend-box player-box">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-12 12"></path><path d="M6 6l12 12"></path></svg>
             </div>
-            <span>Người chơi</span>
+            <span id="legendXText">Người chơi 1</span>
           </div>
           <div class="legend-item">
-            <span>AI</span>
+            <span id="legendOText">AI</span>
             <div class="legend-box ai-box"></div>
           </div>
         </div>
@@ -173,7 +173,11 @@
       <div class="modal-body">
         <div class="setting-group">
           <label>Tên người chơi X</label>
-          <input type="text" id="inputPlayerX" class="setting-input" placeholder="Nhập tên..." maxlength="15" value="Người chơi" />
+          <input type="text" id="inputPlayerX" class="setting-input" placeholder="Nhập tên..." maxlength="15" value="Người chơi 1" />
+        </div>
+        <div class="setting-group">
+          <label>Tên người chơi O</label>
+          <input type="text" id="inputPlayerO" class="setting-input" placeholder="Nhập tên..." maxlength="15" value="Người chơi 2" />
         </div>
         <div class="setting-group">
           <label>Chế độ chơi</label>
@@ -200,6 +204,6 @@
     </div>
   </div>
 
-  <script src="game.js?v=4"></script>
+  <script src="game.js?v=5"></script>
 </body>
 </html>
