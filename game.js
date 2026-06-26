@@ -5,6 +5,9 @@
 
 const BOARD_SIZE = 15;
 const WIN_COUNT = 5;
+const DEFAULT_PVP_PLAYER_X_NAME = 'Người chơi 1';
+const AI_PLAYER_NAME = 'Gomoku AI';
+const DEFAULT_PVP_PLAYER_O_NAME = 'Người chơi 2';
 
 let state = {
   grid: [],
@@ -16,8 +19,9 @@ let state = {
   moveHistory: [],
   mode: 'human-ai',
   difficulty: 'medium',
-  playerXName: 'Người chơi',
-  playerOName: 'Gomoku AI',
+  playerXName: DEFAULT_PVP_PLAYER_X_NAME,
+  playerOName: AI_PLAYER_NAME,
+  playerONamePvP: DEFAULT_PVP_PLAYER_O_NAME,
   aiThinking: false,
   aiThinkTimeout: null,
   gameStartTime: null,
@@ -60,12 +64,17 @@ const els = {
   closeSettings:   $('closeSettings'),
   saveSettings:    $('saveSettings'),
   inputPlayerX:    $('inputPlayerX'),
+  inputPlayerO:    $('inputPlayerO'),
   modeHumanAI:     $('modeHumanAI'),
   modeHumanHuman:  $('modeHumanHuman'),
+  difficultyGroup: $('difficultyGroup'),
   
   diffEasy:        $('diffEasy'),
   diffMedium:      $('diffMedium'),
   diffHard:        $('diffHard'),
+
+  legendXText:     $('legendXText'),
+  legendOText:     $('legendOText'),
 };
 
 // ======================== INITIALIZATION ========================
@@ -328,9 +337,11 @@ function updateUI() {
 
   els.playerXName.textContent = state.playerXName;
   els.playerOName.textContent = state.playerOName;
+  els.legendXText.textContent = state.playerXName;
+  els.legendOText.textContent = state.mode === 'human-ai' ? 'AI' : state.playerOName;
   
   const difficultyLabel = { easy: 'Dễ', medium: 'Vừa', hard: 'Khó' }[state.difficulty] || 'Vừa';
-  els.statMode.textContent = state.mode === 'human-ai' ? `Người vs AI • ${difficultyLabel}` : 'Người vs Người';
+  els.statMode.textContent = state.mode === 'human-ai' ? `Người vs AI • ${difficultyLabel}` : 'Người vs Người • Local PvP';
 }
 
 function setStatus(type, text) {
@@ -358,20 +369,49 @@ els.btnSettingsAlt.addEventListener('click', () => els.settingsModal.classList.r
 els.closeSettings.addEventListener('click', () => els.settingsModal.classList.add('hidden'));
 
 els.saveSettings.addEventListener('click', () => {
-  state.playerXName = els.inputPlayerX.value || 'Người chơi';
+  state.playerXName = els.inputPlayerX.value || DEFAULT_PVP_PLAYER_X_NAME;
+  if (state.mode === 'human-human') {
+    state.playerONamePvP = els.inputPlayerO.value || DEFAULT_PVP_PLAYER_O_NAME;
+    state.playerOName = state.playerONamePvP;
+  } else {
+    state.playerOName = AI_PLAYER_NAME;
+  }
   els.settingsModal.classList.add('hidden');
   updateUI();
 });
+
+function syncModeControls() {
+  const isPvP = state.mode === 'human-human';
+  els.difficultyGroup.classList.toggle('is-disabled', isPvP);
+  [els.diffEasy, els.diffMedium, els.diffHard].forEach(btn => {
+    btn.disabled = isPvP;
+  });
+
+  els.inputPlayerO.disabled = !isPvP;
+  if (isPvP) {
+    if (!state.playerONamePvP || state.playerONamePvP === AI_PLAYER_NAME) {
+      state.playerONamePvP = DEFAULT_PVP_PLAYER_O_NAME;
+    }
+    els.inputPlayerO.value = state.playerONamePvP;
+    state.playerOName = state.playerONamePvP;
+  } else {
+    els.inputPlayerO.value = AI_PLAYER_NAME;
+    state.playerOName = AI_PLAYER_NAME;
+  }
+}
 
 function updateMode(mode) {
   state.mode = mode;
   els.modeHumanAI.classList.toggle('active', mode === 'human-ai');
   els.modeHumanHuman.classList.toggle('active', mode === 'human-human');
+  syncModeControls();
+  updateUI();
 }
 els.modeHumanAI.addEventListener('click', () => updateMode('human-ai'));
 els.modeHumanHuman.addEventListener('click', () => updateMode('human-human'));
 
 function updateDiff(diff) {
+  if (state.mode === 'human-human') return;
   state.difficulty = diff;
   els.diffEasy.classList.toggle('active', diff === 'easy');
   els.diffMedium.classList.toggle('active', diff === 'medium');
@@ -384,5 +424,6 @@ els.diffHard.addEventListener('click', () => updateDiff('hard'));
 
 // Khởi chạy khi load
 window.addEventListener('DOMContentLoaded', () => {
+  syncModeControls();
   initGame();
 });
