@@ -130,8 +130,8 @@ function createGridDOM() {
   for(let s of stars) {
      const sp = document.createElement('div');
      sp.className = 'star-point';
-     sp.style.left = (s[1] * 26 + 13) + 'px';
-     sp.style.top = (s[0] * 26 + 13) + 'px';
+     sp.style.left = (s[1] * 36 + 18) + 'px';
+     sp.style.top = (s[0] * 36 + 18) + 'px';
      els.boardGrid.appendChild(sp);
   }
   
@@ -163,9 +163,7 @@ function updateBoardDOM() {
         const p = document.createElement('div');
         p.className = 'piece piece-' + pieceStr.toLowerCase();
         if (state.lastMove && state.lastMove[0] === r && state.lastMove[1] === c) {
-           const dot = document.createElement('div');
-           dot.className = 'last-move-dot';
-           p.appendChild(dot);
+           p.classList.add('last-move-highlight');
         }
         cell.appendChild(p);
       }
@@ -179,10 +177,10 @@ function updateBoardDOM() {
 function drawWinLineDOM() {
   const first = state.winningCells[0];
   const last = state.winningCells[state.winningCells.length - 1];
-  const x1 = first[1] * 26 + 13;
-  const y1 = first[0] * 26 + 13;
-  const x2 = last[1] * 26 + 13;
-  const y2 = last[0] * 26 + 13;
+  const x1 = first[1] * 36 + 18;
+  const y1 = first[0] * 36 + 18;
+  const x2 = last[1] * 36 + 18;
+  const y2 = last[0] * 36 + 18;
   const dx = x2 - x1;
   const dy = y2 - y1;
   const len = Math.sqrt(dx*dx + dy*dy);
@@ -315,11 +313,38 @@ function endGame(winner, winLine) {
     els.winSub.textContent = 'Bất phân thắng bại';
   } else {
     els.winTitle.textContent = 'WIN';
-    els.winTitle.style.color = 'var(--brand-green)';
+    els.winTitle.style.color = '#8B0000';
     const name = winner === 'X' ? state.playerXName : state.playerOName;
     els.winSub.textContent = `${name} đã chiến thắng!`;
+    if (typeof confetti === 'function') {
+      fireConfetti();
+    }
   }
   els.winOverlay.classList.remove('hidden');
+}
+
+function fireConfetti() {
+  var duration = 3 * 1000;
+  var animationEnd = Date.now() + duration;
+  var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
+
+  function randomInRange(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  var interval = setInterval(function() {
+    var timeLeft = animationEnd - Date.now();
+    if (timeLeft <= 0) {
+      return clearInterval(interval);
+    }
+    var particleCount = 50 * (timeLeft / duration);
+    confetti(Object.assign({}, defaults, { particleCount,
+      origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+    }));
+    confetti(Object.assign({}, defaults, { particleCount,
+      origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+    }));
+  }, 250);
 }
 
 // ======================== UI UPDATE ========================
