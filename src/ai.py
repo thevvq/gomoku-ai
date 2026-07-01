@@ -12,7 +12,7 @@ Ba mức độ khó với hành vi phân biệt rõ ràng:
 """
 
 import random
-from heuristic import get_best_move, get_easy_move, score_for_player
+from heuristic import get_best_move, get_candidate_cells, get_easy_move, score_for_player
 from minimax import get_best_move_minimax
 
 # ---------------------------------------------------------------------------
@@ -83,7 +83,7 @@ def _get_easy_ai_move(board, ai_player='O', human_player='X'):
     """
     # 30% xác suất đi ngẫu nhiên (đi bừa)
     if random.random() < 0.30:
-        candidates = _get_candidate_cells(board.grid, board.size, radius=2)
+        candidates = get_candidate_cells(board.grid, board.size, radius=2)
         empty = [pos for pos in candidates if board.grid[pos[0]][pos[1]] is None]
         if empty:
             return random.choice(empty)
@@ -99,36 +99,13 @@ def _get_easy_ai_move(board, ai_player='O', human_player='X'):
     if forced is not None and random.random() < 0.70:  # 30% bỏ lỡ cả chặn 4-mở
         return forced
 
-    # Lấy top-8 nước heuristic rồi chọn ngẫu nhiên
-    grid = board.grid
-    size = board.size
-    moves_with_score = []
-
-    candidates = _get_candidate_cells(grid, size, radius=2)
-    if not candidates:
-        mid = size // 2
-        return (mid, mid)
-
-    for r, c in candidates:
-        if grid[r][c] is not None:
-            continue
-        grid[r][c] = ai_player
-        atk = score_for_player(grid, ai_player)
-        grid[r][c] = None
-
-        grid[r][c] = human_player
-        dfn = score_for_player(grid, human_player)
-        grid[r][c] = None
-
-        combined = atk + dfn * 0.3   # trọng số phòng thủ rất thấp → AI gần như bỏ qua đòn đối thủ
-        moves_with_score.append((combined, (r, c)))
-
-    if not moves_with_score:
-        return get_easy_move(board, ai_player=ai_player, human_player=human_player)
-
-    moves_with_score.sort(reverse=True)
-    pool = moves_with_score[:min(8, len(moves_with_score))]
-    return random.choice(pool)[1]
+    return get_easy_move(
+        board,
+        ai_player=ai_player,
+        human_player=human_player,
+        top_k=8,
+        defend_weight=0.3,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -252,22 +229,3 @@ def get_random_move(board):
         if not board.is_occupied(r, c)
     ]
     return random.choice(empty_cells) if empty_cells else None
-
-
-# ---------------------------------------------------------------------------
-# Internal helper dùng chung
-# ---------------------------------------------------------------------------
-
-def _get_candidate_cells(grid, size, radius=2):
-    """Trả về tập ô trống nằm trong bán kính quanh quân đã đặt."""
-    from config import BOARD_SIZE
-    candidates = set()
-    for r in range(size):
-        for c in range(size):
-            if grid[r][c] is not None:
-                for dr in range(-radius, radius + 1):
-                    for dc in range(-radius, radius + 1):
-                        nr, nc = r + dr, c + dc
-                        if 0 <= nr < BOARD_SIZE and 0 <= nc < BOARD_SIZE and grid[nr][nc] is None:
-                            candidates.add((nr, nc))
-    return candidates

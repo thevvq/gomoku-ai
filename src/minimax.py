@@ -11,7 +11,7 @@ Mục tiêu:
 """
 
 from config import BOARD_SIZE
-from heuristic import score_for_player
+from heuristic import evaluate_move, get_candidate_cells, score_for_player
 
 # Giá trị infinity để dùng trong minimax
 INF = float('inf')
@@ -98,26 +98,8 @@ def get_all_moves(grid):
 
 
 def get_candidate_moves(grid, radius=1):
-    """
-    Lấy các ô trống nằm gần quân đã có trên bàn cờ.
-
-    Giảm mạnh số nhánh phải duyệt trong minimax so với việc xét toàn bộ
-    các ô trống, nhưng vẫn giữ được các nước đi có khả năng liên quan.
-    """
-    candidates = set()
-
-    for r in range(BOARD_SIZE):
-        for c in range(BOARD_SIZE):
-            if grid[r][c] is None:
-                continue
-
-            for dr in range(-radius, radius + 1):
-                for dc in range(-radius, radius + 1):
-                    nr, nc = r + dr, c + dc
-                    if 0 <= nr < BOARD_SIZE and 0 <= nc < BOARD_SIZE and grid[nr][nc] is None:
-                        candidates.add((nr, nc))
-
-    return list(candidates)
+    """Lấy các ô trống nằm gần quân đã có trên bàn cờ."""
+    return list(get_candidate_cells(grid, size=BOARD_SIZE, radius=radius))
 
 
 def _limit_moves(moves, max_moves):
@@ -126,18 +108,8 @@ def _limit_moves(moves, max_moves):
     return moves[:max_moves]
 
 
-def sort_moves_by_proximity(grid, moves):
-    """
-    Sắp xếp các nước đi theo độ gần với các quân hiện có trên bàn cờ.
-    Nước đi gần với các quân hiện có thường có tiên năng cao hơn.
-    
-    Args:
-        grid:  2D list biểu diễn bàn cờ
-        moves: list các nước đi [(row, col), ...]
-    
-    Returns:
-        list: danh sách các nước đi đã sắp xếp theo độ gần
-    """
+def sort_moves_by_proximity(grid, moves, ai_player='O', human_player='X'):
+    """Sắp xếp nước đi theo heuristic trước, khoảng cách gần quân cũ là phụ."""
     def distance_to_closest_piece(r, c):
         """Tính khoảng cách Manhattan đến quân gần nhất trên bàn cờ."""
         min_dist = INF
@@ -147,9 +119,16 @@ def sort_moves_by_proximity(grid, moves):
                     dist = abs(r - rr) + abs(c - cc)
                     min_dist = min(min_dist, dist)
         return min_dist
-    
-    # Sắp xếp các nước đi theo khoảng cách (gần nhất được ưu tiên)
-    return sorted(moves, key=lambda move: distance_to_closest_piece(move[0], move[1]))
+
+    def move_sort_key(move):
+        r, c = move
+        heuristic_score = evaluate_move(grid, r, c, ai_player=ai_player, human_player=human_player)
+        if heuristic_score is None:
+            heuristic_score = -INF
+        proximity = distance_to_closest_piece(r, c)
+        return (-heuristic_score, proximity, r, c)
+
+    return sorted(moves, key=move_sort_key)
 
 
 # ---------------------------------------------------------------------------
@@ -189,7 +168,7 @@ def minimax(grid, depth, is_maximizing, alpha, beta, ai_player, human_player):
         return evaluate_board(grid, ai_player, human_player)
     
     # Sắp xếp nước đi để tìm kiếm tốt hơn (pruning hiệu quả hơn)
-    moves = sort_moves_by_proximity(grid, moves)
+    moves = sort_moves_by_proximity(grid, moves, ai_player=ai_player, human_player=human_player)
     moves = _limit_moves(moves, 12 if depth <= 2 else 10)
     
     if is_maximizing:
@@ -263,7 +242,7 @@ def get_best_move_minimax(board, depth=4, ai_player='O', human_player='X', max_c
     best_eval = -INF
     
     # Sắp xếp nước đi để tìm kiếm hiệu quả hơn (alpha-beta pruning tốt hơn)
-    moves = sort_moves_by_proximity(board.grid, moves)
+    moves = sort_moves_by_proximity(board.grid, moves, ai_player=ai_player, human_player=human_player)
     moves = _limit_moves(moves, max_candidates)
     
     for r, c in moves:
