@@ -603,18 +603,22 @@ body {
 .legend-panel {
   margin-top: auto;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-direction: row;
+  justify-content: space-between;
   padding-top: 14px;
   border-top: 1px solid var(--border-divider);
 }
-.legend-item {
+.legend-col {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
+  gap: 8px;
+}
+.legend-name {
+  font-size: 13px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-main);
+  text-align: center;
 }
 .legend-box {
   width: 20px;
@@ -660,10 +664,10 @@ body {
 
 .modal, .win-card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 24px;
-  width: 300px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  width: 340px;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.15);
   text-align: center;
 }
 
@@ -671,30 +675,75 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
-.modal-header h2 { font-size: 16px; color: var(--text-main); }
-.modal-close { background: none; border: none; font-size: 16px; cursor: pointer; color: var(--text-muted); }
+.modal-header h2 { font-size: 18px; font-weight: 700; color: var(--text-main); }
+.modal-close { background: none; border: none; font-size: 20px; font-weight: bold; cursor: pointer; color: var(--text-muted); transition: 0.2s; }
+.modal-close:hover { color: #8B0000; }
 
 .setting-group {
   text-align: left;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 .setting-group label {
   display: block;
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 6px;
 }
 .setting-input {
   width: 100%;
-  padding: 8px;
-  border: 1px solid var(--border-light);
-  border-radius: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-divider);
+  border-radius: 8px;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
 }
-.modal-footer { margin-top: 16px; }
+.setting-input:focus {
+  outline: none;
+  border-color: #8B0000;
+  box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
+}
+
+.mode-selector {
+  display: flex;
+  background: #F3F4F6;
+  border-radius: 8px;
+  padding: 4px;
+  border: 1px solid var(--border-divider);
+}
+.mode-btn {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.mode-btn:hover {
+  color: var(--text-main);
+}
+.mode-btn.active {
+  background: #fff;
+  color: #8B0000;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.modal-footer { margin-top: 24px; }
+.modal-footer .btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 8px;
+}
 
 .win-title {
   font-size: 24px;
