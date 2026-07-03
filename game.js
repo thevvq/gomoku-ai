@@ -307,17 +307,28 @@ function endGame(winner, winLine) {
   updateBoardDOM();
   updateUI();
   
+  // Reset overlay styles to default
+  els.winOverlay.style.background = '';
+  
   if (winner === 'draw') {
     els.winTitle.textContent = 'HÒA';
     els.winTitle.style.color = 'var(--text-main)';
     els.winSub.textContent = 'Bất phân thắng bại';
   } else {
-    els.winTitle.textContent = 'WIN';
-    els.winTitle.style.color = '#8B0000';
     const name = winner === 'X' ? state.playerXName : state.playerOName;
-    els.winSub.textContent = `${name} đã chiến thắng!`;
-    if (typeof confetti === 'function') {
-      fireConfetti();
+    
+    if (state.mode === 'human-ai' && winner === 'O') {
+      els.winTitle.textContent = 'LOSE';
+      els.winTitle.style.color = '#8B0000';
+      els.winSub.textContent = `${name} đã chiến thắng!`;
+      els.winOverlay.style.background = 'rgba(85, 85, 85, 0.85)'; // Màu lông chuột (Dark Gray)
+    } else {
+      els.winTitle.textContent = 'WIN';
+      els.winTitle.style.color = '#8B0000';
+      els.winSub.textContent = `${name} đã chiến thắng!`;
+      if (typeof confetti === 'function') {
+        fireConfetti();
+      }
     }
   }
   els.winOverlay.classList.remove('hidden');
