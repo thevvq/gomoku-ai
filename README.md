@@ -72,9 +72,8 @@ python src/main.py
 
 Sau khi khởi động server, mở trình duyệt tại:
 
-```
-http://localhost:7891
-```
+
+[http://localhost:7891](http://localhost:7891)
 
 ---
 
